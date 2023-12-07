@@ -1,0 +1,153 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+
+    int data;
+
+    struct Node *next;
+
+};
+
+
+struct Node *
+createNode (int value)
+{
+
+    struct Node *newNode = malloc (sizeof (struct Node));
+
+    newNode->data = value;
+
+    newNode->next = NULL;
+
+    return newNode;
+
+}
+
+
+
+struct Node *
+insert (struct Node *head, int value, int position)
+{
+
+    struct Node *newNode = createNode (value);
+
+    if (position <= 0) {
+
+        newNode->next = head;
+
+        return newNode;
+
+    }
+
+    if (head == NULL || position == 1) {
+
+        newNode->next = head;
+
+        return newNode;
+
+    }
+
+    head->next = insert (head->next, value, position - 1);
+
+    return head;
+
+}
+
+
+
+void
+displayList (struct Node *head)
+{
+
+    while (head)
+        printf ("%d -> ", head->data), head = head->next;
+
+    printf ("NULL\n");
+
+}
+
+
+
+void
+freeList (struct Node *head)
+{
+
+    while (head) {
+
+        struct Node *temp = head;
+
+        head = head->next;
+
+        free (temp);
+
+    }
+}
+
+int
+
+main ()
+{
+
+    struct Node *head = insert (insert (insert (NULL, 10, 0), 20, 1), 30, 2);
+
+    printf ("Pre-existing Linked List: ");
+
+    displayList (head);
+
+
+    int choice, value, position;
+
+    do {
+
+        printf
+        ("\n1. Insert at the beginning\n2. Insert at the end\n3. Insert at a specific position\n0. Exit\n");
+
+        printf ("Enter your choice: ");
+
+        scanf ("%d", &choice);
+
+
+        switch (choice) {
+
+        case 1:
+            printf ("Enter the value to insert at the beginning: ");
+            scanf ("%d", &value);
+            head = insert (head, value, 0);
+            break;
+
+        case 2:
+            printf ("Enter the value to insert at the end: ");
+            scanf ("%d", &value);
+            head = insert (head, value, 9999);
+            break;
+
+        case 3:
+            printf ("Enter the value to insert: ");
+            scanf ("%d", &value);
+            printf ("Enter the position to insert at: ");
+            scanf ("%d", &position);
+            head = insert (head, value, position);
+            break;
+
+        case 0:
+            break;
+
+        default:
+            printf ("Invalid choice\n");
+
+        }
+
+
+        printf ("Updated Linked List: ");
+
+        displayList (head);
+
+    } while (choice != 0);
+
+
+    freeList (head);
+
+    return 0;
+
+}

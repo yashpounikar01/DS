@@ -1,0 +1,104 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct Node {
+    int data;
+    struct Node *prev, *next;
+} Node;
+
+Node* createNode(int data)
+{
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    if (!newNode) exit(1);
+    newNode->data = data;
+    newNode->prev = newNode->next = NULL;
+    return newNode;
+}
+
+void insertAtEnd(Node** head, Node** tail, int data)
+{
+    Node* newNode = createNode(data);
+    if (!*head) *head = *tail = newNode;
+    else {
+        (*tail)->next = newNode;
+        newNode->prev = *tail;
+        *tail = newNode;
+    }
+}
+
+void displayList(Node* head)
+{
+    printf("Doubly Linked List: ");
+    while (head) {
+        printf("%d", head->data);
+        if (head->next) printf("<->");
+        head = head->next;
+    }
+    printf("<->NULL\n");
+}
+
+void deleteNode(Node** head, Node** tail, Node* target)
+{
+    if (!target) return;
+    if (target->prev) target->prev->next = target->next;
+    else *head = target->next;
+    if (target->next) target->next->prev = target->prev;
+    else *tail = target->prev;
+    free(target);
+}
+
+void freeList(Node* head)
+{
+    while (head) {
+        Node* temp = head;
+        head = head->next;
+        free(temp);
+    }
+}
+
+int main()
+{
+    Node *head = NULL, *tail = NULL;
+
+    insertAtEnd(&head, &tail, 10);
+    insertAtEnd(&head, &tail, 20);
+    insertAtEnd(&head, &tail, 30);
+    insertAtEnd(&head, &tail, 40);
+
+    displayList(head);
+
+    int choice;
+    do {
+        printf("\nChoices:\n1. Delete at Beginning\n2. Delete at End\n3. Delete at Specific Position\n0. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+        case 1:
+            deleteNode(&head, &tail, head);
+            break;
+        case 2:
+            deleteNode(&head, &tail, tail);
+            break;
+        case 3: {
+            int position;
+            printf("Enter the position to delete: ");
+            scanf("%d", &position);
+            Node* current = head;
+            for (int i = 1; i < position && current; ++i) current = current->next;
+            deleteNode(&head, &tail, current);
+            break;
+        }
+        case 0:
+            break;
+        default:
+            printf("Invalid choice\n");
+        }
+
+        displayList(head);
+
+    } while (choice != 0);
+
+    freeList(head);
+    return 0;
+}

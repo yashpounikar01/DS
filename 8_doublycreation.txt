@@ -1,0 +1,53 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct node {
+    int data;
+    struct node *prev, *next;
+} node_t;
+
+node_t *createNode(int data) {
+    node_t *newNode = malloc(sizeof(node_t));
+    if (!newNode) {
+        perror("Error: Memory allocation failed");
+        exit(EXIT_FAILURE);
+    }
+    newNode->data = data;
+    return newNode;
+}
+
+void insertAtEnd(node_t **head, node_t **tail, int data) {
+    node_t *newNode = createNode(data);
+    newNode->prev = *tail;
+    if (!*head) {
+        *head = newNode;
+    } else {
+        (*tail)->next = newNode;
+    }
+    *tail = newNode;
+}
+
+void displayList(node_t *head) {
+    printf("Doubly Linked List: ");
+    while (head) {
+        printf("%d", head->data);
+        if ((head = head->next)) {
+            printf(" <-> ");
+        }
+    }
+    printf(" <-> NULL\n");
+}
+
+int main() {
+    node_t *head = NULL, *tail = NULL;
+    int data;
+    do {
+        printf("Enter data (-1 to stop): ");
+        scanf("%d", &data);
+        if (data != -1) {
+            insertAtEnd(&head, &tail, data);
+        }
+    } while (data != -1);
+    displayList(head);
+    return 0;
+}

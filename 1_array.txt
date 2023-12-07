@@ -1,0 +1,52 @@
+#include <stdio.h>
+
+void display(int arr[], int size) {
+    printf("Array: ");
+    for (int i = 0; i < size; i++) printf("%d ", arr[i]);
+    printf("\n");
+}
+
+int insert(int arr[], int *size, int pos, int elem) {
+    if (pos < 0 || pos > *size || *size >= 100) return -1;
+    for (int i = *size; i > pos; i--) arr[i] = arr[i - 1];
+    arr[pos] = elem;
+    (*size)++;
+    return 0;
+}
+
+int delete(int arr[], int *size, int pos) {
+    if (pos < 0 || pos >= *size) return -1;
+    for (int i = pos; i < *size - 1; i++) arr[i] = arr[i + 1];
+    (*size)--;
+    return 0;
+}
+
+int main() {
+    int arr[100], size = 0, choice, pos, elem;
+
+    while (1) {
+        printf("\n1. Display 2. Insert 3. Delete 4. Exit\n");
+        printf("Enter choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1: display(arr, size); break;
+            case 2: printf("Pos, Elem: "); scanf("%d %d", &pos, &elem);
+                    if (insert(arr, &size, pos, elem) == 0)
+                        printf("Inserted\n");
+                    else
+                        printf("Error inserting element\n");
+                    break;
+            case 3: printf("Pos: "); scanf("%d", &pos);
+                    if (delete(arr, &size, pos) == 0)
+                        printf("Deleted\n");
+                    else
+                        printf("Error deleting element\n");
+                    break;
+            case 4: printf("Exiting\n"); return 0;
+            default: printf("Invalid choice\n");
+        }
+    }
+
+    return 0;
+}

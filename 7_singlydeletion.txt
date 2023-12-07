@@ -1,0 +1,138 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int data;
+    struct Node* next;
+};
+
+struct Node* createNode(int value) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    if (!newNode) {
+        perror("Memory allocation failed");
+        exit(EXIT_FAILURE);
+    }
+    newNode->data = value;
+    newNode->next = NULL;
+    return newNode;
+}
+
+struct Node* insertAtEnd(struct Node* head, int value) {
+    if (!head) return createNode(value);
+
+    struct Node* current = head;
+    while (current->next) {
+        current = current->next;
+    }
+    current->next = createNode(value);
+    return head;
+}
+
+void displayList(struct Node* head) {
+    while (head) {
+        printf("%d -> ", head->data);
+        head = head->next;
+    }
+    printf("NULL\n");
+}
+
+struct Node* deleteAtBeginning(struct Node* head) {
+    if (!head) {
+        puts("List is empty");
+        return NULL;
+    }
+    struct Node* newHead = head->next;
+    free(head);
+    return newHead;
+}
+
+struct Node* deleteAtEnd(struct Node* head) {
+    if (!head) {
+        puts("List is empty");
+        return NULL;
+    }
+    if (!head->next) {
+        free(head);
+        return NULL;
+    }
+    struct Node* current = head;
+    while (current->next->next) {
+        current = current->next;
+    }
+    free(current->next);
+    current->next = NULL;
+    return head;
+}
+
+struct Node* deleteAtPosition(struct Node* head, int position) {
+    if (!head) {
+        puts("List is empty");
+        return NULL;
+    }
+    if (position == 1) {
+        struct Node* newHead = head->next;
+        free(head);
+        return newHead;
+    }
+    struct Node* current = head;
+    for (int i = 1; i < position - 1 && current->next; ++i) {
+        current = current->next;
+    }
+    if (!current->next) {
+        puts("Position out of range");
+        return head;
+    }
+    struct Node* temp = current->next;
+    current->next = current->next->next;
+    free(temp);
+    return head;
+}
+
+void freeList(struct Node* head) {
+    while (head) {
+        struct Node* temp = head;
+        head = head->next;
+        free(temp);
+    }
+}
+
+int main() {
+    struct Node* head = NULL;
+
+    head = insertAtEnd(head, 10);
+    head = insertAtEnd(head, 20);
+    head = insertAtEnd(head, 30);
+    head = insertAtEnd(head, 40);
+
+    int choice, position;
+    do {
+        printf("\n1. Delete at beginning\n2. Delete at end\n3. Delete at specific position\n4. Display list\n0. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+        case 1:
+            head = deleteAtBeginning(head);
+            break;
+        case 2:
+            head = deleteAtEnd(head);
+            break;
+        case 3:
+            printf("Enter the position to delete: ");
+            scanf("%d", &position);
+            head = deleteAtPosition(head, position);
+            break;
+        case 4:
+            printf("Linked List: ");
+            displayList(head);
+            break;
+        case 0:
+            break;
+        default:
+            printf("Invalid choice\n");
+        }
+    } while (choice != 0);
+
+    freeList(head);
+    return 0;
+}

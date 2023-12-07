@@ -1,0 +1,84 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define SIZE 10
+
+struct Node {
+    int key, data;
+    struct Node* next;
+};
+
+struct HashTable {
+    struct Node* table[SIZE];
+};
+
+struct Node* createNode(int key, int data)
+{
+    struct Node* newNode = malloc(sizeof(struct Node));
+    newNode->key = key;
+    newNode->data = data;
+    newNode->next = NULL;
+    return newNode;
+}
+
+struct HashTable* initializeHashTable()
+{
+    struct HashTable* hashTable = malloc(sizeof(struct HashTable));
+    for (int i = 0; i < SIZE; ++i)
+        hashTable->table[i] = NULL;
+
+    int keys[] = {2, 5, 12, 7, 15};
+    int data[] = {20, 50, 120, 70, 150};
+
+    for (int i = 0; i < sizeof(keys) / sizeof(keys[0]); ++i) {
+        int index = keys[i] % SIZE;
+        struct Node* newNode = createNode(keys[i], data[i]);
+        newNode->next = hashTable->table[index];
+        hashTable->table[index] = newNode;
+    }
+    return hashTable;
+}
+
+int getValue(struct HashTable* hashTable, int key)
+{
+    int index = key % SIZE;
+    for (struct Node* current = hashTable->table[index]; current != NULL; current = current->next)
+        if (current->key == key)
+            return current->data;
+    return -1;
+}
+
+void freeHashTable(struct HashTable* hashTable)
+{
+    for (int i = 0; i < SIZE; ++i)
+        for (struct Node* current = hashTable->table[i]; current != NULL; ) {
+            struct Node* next = current->next;
+            free(current);
+            current = next;
+        }
+    free(hashTable);
+}
+
+int main()
+{
+    struct HashTable* hashTable = initializeHashTable();
+    int key, data;
+
+    printf("Predefined Hash Table:\n");
+    for (int i = 0; i < SIZE; ++i) {
+        printf("Bucket %d: ", i);
+        for (struct Node* current = hashTable->table[i]; current != NULL; current = current->next)
+            printf("(%d, %d) ", current->key, current->data);
+        printf("\n");
+    }
+
+    printf("\nEnter a key to access its corresponding value (enter -1 to exit): ");
+    while (scanf("%d", &key), key != -1) {
+        data = getValue(hashTable, key);
+        printf(data != -1 ? "Value for key %d: %d\n" : "Key %d not found in the hash table\n", key, data);
+        printf("\nEnter a key to access its corresponding value (enter -1 to exit): ");
+    }
+
+    freeHashTable(hashTable);
+    return 0;
+}
